@@ -4,7 +4,7 @@
 
 We want to understand and showcase the possibility of having a `DATABASE_SECRET_KEY` that follows these criterias:
 * the key to encrypt is unknown to `anyone`
-* the `DATABASE_SECRET_KEY` decrypts the key for field encryptio
+* the `DATABASE_SECRET_KEY` decrypts the key for field encryption
 * the `DATABASE_SECRET_KEY` can be rotated safely
     * without the need to re-encrypt all fields
 
@@ -27,10 +27,13 @@ git clone https://github.com/quay/quay.git
 
 this is mandatory as we do want to use the existing classes and methods to understand the implications to the code.
 
+* change inside the quay clone directory 
+
 * fetch the three scripts emulating the lifecycles of Quay data
     * [master-key-init.py](https://raw.githubusercontent.com/michaelalang/quay-rotate-encryption-keys/main/master-key-init.py)
     * [quay-workflow.py](https://raw.githubusercontent.com/michaelalang/quay-rotate-encryption-keys/main/quay-workflow.py)
     * [master-key-workflow.py](https://raw.githubusercontent.com/michaelalang/quay-rotate-encryption-keys/main/master-key-workflow.py)
+
 
 * configure your initial `DATABASE_SECRET_KEY` value
 ```
@@ -58,7 +61,8 @@ $ cat .masterkey
 gAAAAABlR13xiDAjaryNx7gJVbMOhzqX4lPiosKujtmr09ZbvWkfrY_uBucmWmYQ51gER7mhArQ16OHPomaxsU5rVyXhvCYeT9sk8ioSnVWhGzvhm8pKeThWlfDCvTn6JVp5Mk66vVmM
 ```
 
-* open a new terminal to start the continuous loop quay-workflow.
+* open a new terminal to start the continuous loop quay-workflow script.
+
 * verify the Quay workflow emulating reading/writing data (NOTE: we do not write with the same master-key to simplify the POC)
 ```
 $ ./quay-workflow.py 
@@ -83,7 +87,7 @@ Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 ```
 
 * verify that the old `DATABASE_SECRET_KEY` isn't working anymore looking at the `quay-workflow` terminal
-  understand that the script mimics the restart of quay 
+  understand that the script mimics the restart of quay so only one error will be shown
 ```
 ...
 Value: secret-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
@@ -102,7 +106,7 @@ Value: secret-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 $ echo new-change-me > .config.yaml
 ```
 
-* verify that the `NewKey|DATABASE_SECRET_KEY` received in the rotation output is working instead
+* verify that the `NewKey|DATABASE_SECRET_KEY` is working as expected
 
 ```
 ...
@@ -111,7 +115,7 @@ Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 ```
 
-* verify that restarting the `quay-workflow` works as expected 
+* verify that restarting the `quay-workflow` is working as expected 
 ```
 Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 ..
