@@ -28,9 +28,9 @@ git clone https://github.com/quay/quay.git
 this is mandatory as we do want to use the existing classes and methods to understand the implications to the code.
 
 * fetch the three scripts emulating the lifecycles of Quay data
-    * master-key-init.py
-    * quay-workflow.py
-    * master-key-workflow.py
+    * [master-key-init.py](https://raw.githubusercontent.com/michaelalang/quay-rotate-encryption-keys/main/master-key-init.py)
+    * [quay-workflow.py](https://raw.githubusercontent.com/michaelalang/quay-rotate-encryption-keys/main/quay-workflow.py)
+    * [master-key-workflow.py](https://raw.githubusercontent.com/michaelalang/quay-rotate-encryption-keys/main/master-key-workflow.py)
 
 * configure your initial `DATABASE_SECRET_KEY` value
 ```
