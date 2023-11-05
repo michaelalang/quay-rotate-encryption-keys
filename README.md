@@ -90,12 +90,12 @@ Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
   understand that the script mimics the restart of quay so only one error will be shown
 ```
 ...
-Value: secret-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
-Value: secret-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
+Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
+Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 invalid Token
 renewing store
-Value: secret-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
-Value: secret-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
+Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
+Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 ...
 ...
 ```
