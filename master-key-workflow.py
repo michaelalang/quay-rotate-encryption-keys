@@ -14,41 +14,42 @@ def to_fkey(key):
     return base64.urlsafe_b64encode(IKEYH.hexdigest().encode())
 
 
-try:
-    with open(".config.yaml") as config:
-        try:
-            KEY1 = config.readline().strip().encode()
-            Fernet(KEY1)
-        except:
-            KEY1 = to_fkey(KEY1)
-        try:
-            KEY2 = config.readline().strip().encode()
-            Fernet(KEY2)
-        except:
-            if KEY2 == b"":
-                raise Exception("DATABASE_SECRET_ROTATE not in config")
-            KEY2 = to_fkey(KEY2)
-    CurrentStore = MultiFernet(
-        map(lambda y: Fernet(y), filter(lambda x: x != None, [KEY2, KEY1]))
-    )
-except Exception as kerr:
-    print("missing DATABASE_SECRET_ROTATE in config")
-    sys.exit(1)
+def rotate_masterkey():
+    KEYS = []
+    try:
+        with open(".config.yaml") as config:
+            for KEY in config.read().strip().split("\n"):
+                try:
+                    Fernet(KEY.strip().encode())
+                    KEYS.append(KEY.strip().encode())
+                except:
+                    try:
+                        Fernet(to_fkey(KEY.strip().encode()))
+                        KEYS.append(to_fkey(KEY.strip().encode()))
+                    except Exception as kerr:
+                        print(f"Fernet Exception {kerr}")
+                        continue
+        CurrentStore = MultiFernet(map(lambda y: Fernet(y), KEYS))
+    except Exception as kerr:
+        print(f"missing DATABASE_SECRET_ROTATE in config {kerr}")
+        sys.exit(1)
+    with open(".masterkey") as mk:
+        MASTERKEY = mk.read().strip().encode()
+    DATABASE_MASTERKEY = CurrentStore.decrypt(MASTERKEY)
+    encrypter = FieldEncrypter(None)
+    encrypter._secret_key = DATABASE_MASTERKEY
+    with open(".data") as data:
+        dvalue = encrypter.decrypt_value(data.read())
+    print(f"Value: {dvalue}")
 
-with open(".masterkey") as mk:
-    MASTERKEY = mk.read().strip().encode()
-DATABASE_MASTERKEY = CurrentStore.decrypt(MASTERKEY)
-encrypter = FieldEncrypter(None)
-encrypter._secret_key = DATABASE_MASTERKEY
-with open(".data") as data:
-    dvalue = encrypter.decrypt_value(data.read())
-print(f"Value: {dvalue}")
+    RotateStore = MultiFernet(map(lambda y: Fernet(y), KEYS))
+    MASTERKEY = RotateStore.rotate(MASTERKEY)
+    with open(".masterkey", "wb") as mk:
+        mk.write(MASTERKEY)
+    encrypter = FieldEncrypter(None)
+    encrypter._secret_key = DATABASE_MASTERKEY
+    with open(".data", "w") as data:
+        data.write(encrypter.encrypt_value(dvalue))
 
-RotateStore = MultiFernet([Fernet(KEY2), Fernet(KEY1)])
-MASTERKEY = RotateStore.rotate(MASTERKEY)
-with open(".masterkey", "wb") as mk:
-    mk.write(MASTERKEY)
-encrypter = FieldEncrypter(None)
-encrypter._secret_key = DATABASE_MASTERKEY
-with open(".data", "w") as data:
-    data.write(encrypter.encrypt_value(dvalue))
+
+rotate_masterkey()

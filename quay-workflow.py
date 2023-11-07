@@ -17,24 +17,24 @@ def to_fkey(key):
 
 
 def getStore():
+    KEYS = []
     try:
         with open(".config.yaml") as config:
-            try:
-                KEY1 = config.readline().strip().encode()
-                Fernet(KEY1)
-            except:
-                KEY1 = to_fkey(KEY1)
-            try:
-                KEY2 = config.readline().strip().encode()
-                Fernet(KEY2)
-            except:
-                KEY2 = to_fkey(KEY2)
-        CurrentStore = MultiFernet(
-            map(lambda y: Fernet(y), filter(lambda x: x != b"", [KEY2, KEY1]))
-        )
-    except:
-        print("missing DATABASE_SECRET in config")
-        sys.exit(1)
+            for KEY in config.read().strip().split("\n"):
+                try:
+                    Fernet(KEY.strip().encode())
+                    KEYS.append(KEY.strip().encode())
+                except:
+                    try:
+                        Fernet(to_fkey(KEY.strip().encode()))
+                        KEYS.append(to_fkey(KEY.strip().encode()))
+                    except Exception as kerr:
+                        print(f"Fernet Exception {kerr}")
+                        continue
+        CurrentStore = MultiFernet(map(lambda y: Fernet(y), KEYS))
+    except Exception as kerr:
+        print(f"missing DATABASE_SECRET_ROTATE in config {kerr}")
+        return
     return CurrentStore
 
 
