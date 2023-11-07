@@ -101,6 +101,8 @@ Value: very-senstive-data-5818ec73-4cd0-4258-a52a-c50ad77d068b
 ```
 
 * rotate the `DATABASE_SECRET_ROTATE` to the `DATABASE_SECRET` 
+
+**NOTE** I've updated the code to not need another rewrite/restart so this step can be skipped
 ```
 # rotate the DATABASE_SECRET_ROTATE to DATABASE_SECRET
 $ echo new-change-me > .config.yaml
